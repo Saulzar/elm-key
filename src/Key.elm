@@ -1,4 +1,10 @@
-module Key exposing (Key(..), onKey, onKeyWithOptions)
+module Key exposing
+  ( Key(..)
+  , onKeyDown, onKeyDownWithOptions
+  , onKeyUp, onKeyUpWithOptions
+  , onKeyPress, onKeyPressWithOptions
+  , key
+  )
 
 {-| This library handles the modern event.key event in Elm. See [https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent/key)
 
@@ -6,8 +12,10 @@ module Key exposing (Key(..), onKey, onKeyWithOptions)
 @docs Key
 
 # Events
-@docs onKey, onKeyWithOptions
-
+@docs onKeyDown, onKeyDownWithOptions
+    , onKeyUp, onKeyUpWithOptions
+    , onKeyPress, onKeyPressWithOptions
+    , key
 -}
 
 import Html exposing (..)
@@ -109,26 +117,51 @@ type Key
 -- Public
 
 
-{-| Capture events for things like text fields or text areas.
+{-| Capture keydown events for things like text fields or text areas.
 It grabs the **key** value at `event.key`
 -}
-onKey : (Key -> msg) -> Html.Attribute msg
-onKey tagger =
+onKeyDown : (Key -> msg) -> Html.Attribute msg
+onKeyDown tagger =
     on "keydown" (Json.map tagger key)
 
-
-{-| Capture events for things like text fields or text areas.
-It grabs the **key** value at `event.key`. Accepts options.
+{-| Capture keyup events for things like text fields or text areas.
+It grabs the **key** value at `event.key`
 -}
-onKeyWithOptions : Options -> (Key -> msg) -> Html.Attribute msg
-onKeyWithOptions options tagger =
+onKeyUp : (Key -> msg) -> Html.Attribute msg
+onKeyUp tagger =
+    on "keyup" (Json.map tagger key)
+
+{-| Capture keypress events for things like text fields or text areas.
+It grabs the **key** value at `event.key`
+-}
+onKeyPress : (Key -> msg) -> Html.Attribute msg
+onKeyPress tagger =
+    on "keyup" (Json.map tagger key)
+
+
+{-| Like onKeyDown with options for controlling event propagation.
+-}
+onKeyDownWithOptions : Options -> (Key -> msg) -> Html.Attribute msg
+onKeyDownWithOptions options tagger =
     onWithOptions "keydown" options (Json.map tagger key)
 
+{-| Like onKeyUp with options for controlling event propagation.
+-}
+onKeyUpWithOptions : Options -> (Key -> msg) -> Html.Attribute msg
+onKeyUpWithOptions options tagger =
+    onWithOptions "keyup" options (Json.map tagger key)
+
+{-| Like onKeyPress with options for controlling event propagation.
+-}
+onKeyPressWithOptions : Options -> (Key -> msg) -> Html.Attribute msg
+onKeyPressWithOptions options tagger =
+    onWithOptions "keypress" options (Json.map tagger key)
 
 
 -- Private
 
-
+{-| Decoder to get the event.key field from html key events.
+-}
 key : Json.Decoder Key
 key =
     Json.at [ "key" ] keyDecoder
